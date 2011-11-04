@@ -104,6 +104,9 @@ public class SunHttpTransport extends HttpTransport {
     private boolean followRedirects = false;
 
     private HashSet<String> texttypes;
+	
+	/** Read and connect timeout */
+	private Integer timeout;
 
     /**
      * Constructs a new SunHttpTransport object.
@@ -113,6 +116,15 @@ public class SunHttpTransport extends HttpTransport {
         texttypes.add("application/json");
         cookieHandler = ThreadCookieHandler.newInstance();
     }
+
+	/**
+     * Constructs a new SunHttpTransport object with explicit timeout 
+	 * configuration.
+     */
+	public SunHttpTransport(Integer timeout) {
+		this();
+		this.timeout = timeout;
+	}
 
     /**
      * Sets the http connections managed by this transport to follow or
@@ -293,6 +305,10 @@ public class SunHttpTransport extends HttpTransport {
     private HttpURLConnection getConnection(URL url) throws IOException {
         HttpURLConnection c = (HttpURLConnection) url.openConnection();
         c.setInstanceFollowRedirects(followRedirects);
+		if(timeout != null) {
+			c.setReadTimeout(timeout);
+			c.setConnectTimeout(timeout);
+		}
         return c;
     }
 
@@ -453,7 +469,7 @@ public class SunHttpTransport extends HttpTransport {
      * @return The StringBuilder buffer containing the resulting document
      * @throws IOException
      * @see #addTextType(String)
-     * @see #getContentSize()
+     * @see #getContentSize() 
      */
     public StringBuilder fetchURL(String url, String postRequest)
             throws IOException {

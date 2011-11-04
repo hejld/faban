@@ -121,6 +121,21 @@ public class HttpTransport {
             throw new FatalException("Cannot access transport constructor.", e);
         }
     }
+	
+	public static HttpTransport newInstance(Integer timeout) {
+        try {
+            return (HttpTransport) Class.forName(provider).
+			asSubclass(HttpTransport.class).getConstructor(Integer.class).newInstance(timeout);
+        } catch (ClassNotFoundException e) {
+            throw new FatalException("Cannot find transport class.", e);
+        } catch (InstantiationException e) {
+            throw new FatalException("Cannot instantiate transport.", e);
+        } catch (IllegalAccessException e) {
+            throw new FatalException("Cannot access transport constructor.", e);
+        } catch (Exception e) {
+            throw new FatalException("Problem consturcting transport instance with timeout parameter.", e);
+		}
+    }
 
     /**
      * Constructs a new HttpTransport object.
